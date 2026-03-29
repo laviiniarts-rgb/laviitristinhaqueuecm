@@ -237,23 +237,33 @@ button:hover{transform:scale(1.07);}
 const sheetURL="https://docs.google.com/spreadsheets/d/1ofYE3lurLEXTQ6XJeAgLwLzgRIFFD94M2Vh5iON-T-M/gviz/tq?tqx=out:json";
 let clients=[];
 
+/* 🔥 FETCH ROBUSTO */
 async function fetchClients(){
     const r=await fetch(sheetURL);
     const t=await r.text();
     const j=JSON.parse(t.substring(47).slice(0,-2));
-    return j.table.rows.map(x=>({
-        name:x.c[0]?.v||"",
-        position:Number(x.c[1]?.v||0),
-        status:x.c[2]?.v||"",
-        deadline:Number(x.c[3]?.v||0)
-    }));
+
+    return j.table.rows.map(x=>{
+
+        let rawDeadline = x.c[3]?.v ?? "";
+        let cleanDeadline = parseInt(String(rawDeadline).replace(/\D/g,'')) || 0;
+
+        return {
+            name: x.c[0]?.v || "",
+            position: Number(x.c[1]?.v || 0),
+            status: x.c[2]?.v || "",
+            deadline: cleanDeadline
+        };
+    });
 }
 
 function progress(days){
+    days = Number(days) || 0;
     return Math.min(Math.max(((7-days)/7)*100,0),100);
 }
 
 function message(days){
+    days = Number(days) || 0;
     if(days>=7)return "Just started ✨";
     if(days>=5)return "Early progress 🎨";
     if(days>=3)return "Halfway 💫";
@@ -262,7 +272,7 @@ function message(days){
 }
 
 function getStep(status){
-    status=status.toLowerCase();
+    status=(status||"").toLowerCase();
     if(status.includes("sketch"))return 1;
     if(status.includes("lineart"))return 2;
     if(status.includes("color"))return 3;
@@ -282,7 +292,7 @@ function attachTooltip(box,text){
 }
 
 async function searchClient(){
-    const name=document.getElementById("search").value.toLowerCase();
+    const name=document.getElementById("search").value.toLowerCase().trim();
     const result=document.getElementById("result");
 
     result.innerHTML=`<div class="loader">Loading...</div>`;
@@ -320,7 +330,7 @@ async function searchClient(){
         </div>
 
         <div class="label" style="margin-top:15px;">Estimated time</div>
-        <div class="value">${c.deadline} days</div>
+        <div class="value">${c.deadline || 0} days</div>
 
         <div class="progress-container" id="barBox">
             <div class="progress-bar" style="width:${prog}%">
@@ -337,6 +347,7 @@ async function searchClient(){
     attachTooltip(document.getElementById("barBox"), message(c.deadline));
 }
 
+/* 🔥 FILA CORRETA */
 async function checkQueue(){
     const result=document.getElementById("result");
 
@@ -348,11 +359,12 @@ async function checkQueue(){
 
     const total=clients.length;
 
-    let totalDays=clients.reduce((sum,c)=>sum + Number(c.deadline || 0),0);
+    let totalDays=clients.reduce((sum,c)=>{
+        return sum + (isNaN(c.deadline)?0:c.deadline);
+    },0);
 
-    let today=new Date();
     let startDate=new Date();
-    startDate.setDate(today.getDate() + totalDays);
+    startDate.setDate(startDate.getDate() + totalDays);
 
     const options={ day:"numeric", month:"long" };
     let formattedDate=startDate.toLocaleDateString("en-US", options);
