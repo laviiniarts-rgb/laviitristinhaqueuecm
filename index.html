@@ -11,21 +11,20 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
-    font-family: "Inter", sans-serif;
+    font-family:"Inter",sans-serif;
     background:#0b0f1a;
     color:#e5e7eb;
     overflow-x:hidden;
 }
 
-/* 🌌 BACKGROUND SOFT */
+/* BACKGROUND */
 .bg{
     position:fixed;
     inset:0;
     z-index:-1;
     background:
     radial-gradient(circle at 20% 30%, #ff9de220, transparent 40%),
-    radial-gradient(circle at 80% 60%, #c79dff20, transparent 40%),
-    radial-gradient(circle at 50% 80%, #ffe29d15, transparent 40%);
+    radial-gradient(circle at 80% 60%, #c79dff20, transparent 40%);
     animation:bgMove 18s ease infinite;
 }
 
@@ -35,7 +34,7 @@ body{
     100%{transform:translate(0,0);}
 }
 
-/* ✨ ENTRADA SUAVE */
+/* ENTRADA */
 .fade-in{
     opacity:0;
     transform:translateY(20px);
@@ -69,9 +68,7 @@ body{
 }
 
 /* INPUT */
-.search{
-    margin-top:40px;
-}
+.search{margin-top:40px;}
 
 input{
     padding:14px;
@@ -92,9 +89,7 @@ button{
     transition:.25s;
 }
 
-button:hover{
-    transform:scale(1.07);
-}
+button:hover{transform:scale(1.07);}
 
 /* CARD */
 .card{
@@ -107,15 +102,8 @@ button:hover{
     animation:fadeUp .8s ease;
 }
 
-.label{
-    font-size:13px;
-    opacity:.6;
-}
-
-.value{
-    font-size:20px;
-    margin-bottom:12px;
-}
+.label{font-size:13px;opacity:.6;}
+.value{font-size:20px;margin-bottom:12px;}
 
 /* STATUS */
 .status{
@@ -125,46 +113,73 @@ button:hover{
     margin-bottom:10px;
 }
 
-/* 🔥 PROGRESS BAR */
+/* ⭐ TIMELINE */
+.timeline{
+    margin-top:20px;
+    display:flex;
+    justify-content:space-between;
+    position:relative;
+}
+
+.timeline::before{
+    content:"";
+    position:absolute;
+    top:50%;
+    left:5%;
+    right:5%;
+    height:2px;
+    background:rgba(255,255,255,0.1);
+    transform:translateY(-50%);
+}
+
+.star-step{
+    position:relative;
+    font-size:20px;
+    opacity:.3;
+    transition:.4s;
+}
+
+.star-step.active{
+    opacity:1;
+    color:#ffd6ff;
+    text-shadow:0 0 8px #ff9de2,0 0 16px #c79dff;
+    transform:scale(1.2);
+}
+
+.step-label{
+    position:absolute;
+    top:28px;
+    font-size:10px;
+    opacity:.6;
+    left:50%;
+    transform:translateX(-50%);
+}
+
+/* PROGRESS */
 .progress-container{
-    margin-top:18px;
+    margin-top:25px;
     height:40px;
     background:#0b0f1a;
     border-radius:40px;
-    position:relative;
     overflow:hidden;
+    position:relative;
     cursor:pointer;
 }
 
-/* brilho interno */
 .progress-bar{
     height:100%;
     width:0%;
     border-radius:40px;
     background:linear-gradient(270deg,#ff9de2,#ffe29d,#c79dff);
     background-size:400% 400%;
-    animation:gradientMove 6s ease infinite;
-    transition:width 1.2s ease;
+    animation:gradientMove 6s infinite;
     display:flex;
     align-items:center;
     justify-content:center;
     font-size:13px;
-    color:#111;
     font-weight:600;
-}
-
-/* glow suave */
-.progress-bar::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);
-    animation:shine 3s infinite;
-}
-
-@keyframes shine{
-    0%{transform:translateX(-100%);}
-    100%{transform:translateX(100%);}
+    color:#111;
+    transition:width 1.2s ease;
 }
 
 @keyframes gradientMove{
@@ -173,7 +188,7 @@ button:hover{
     100%{background-position:0%}
 }
 
-/* 💖 TOOLTIP */
+/* TOOLTIP */
 .tooltip{
     position:absolute;
     bottom:55px;
@@ -255,6 +270,15 @@ function message(days){
     return "Finishing 🌟";
 }
 
+function getStep(status){
+    status=status.toLowerCase();
+    if(status.includes("sketch"))return 1;
+    if(status.includes("lineart"))return 2;
+    if(status.includes("color"))return 3;
+    if(status.includes("render"))return 4;
+    return 0;
+}
+
 function attachTooltip(box,text){
     const tip=document.createElement("div");
     tip.className="tooltip";
@@ -285,6 +309,7 @@ async function searchClient(){
 
     const prog=progress(c.deadline);
     const days=parseInt(c.deadline);
+    const step=getStep(c.status);
 
     result.innerHTML=`
     <div class="card">
@@ -297,9 +322,18 @@ async function searchClient(){
         <div class="label">Status</div>
         <div class="status">${c.status}</div>
 
-        <div class="label">Estimated time</div>
+        <!-- ⭐ TIMELINE -->
+        <div class="timeline">
+            <div class="star-step" id="s1">★<div class="step-label">Sketch</div></div>
+            <div class="star-step" id="s2">★<div class="step-label">Lineart</div></div>
+            <div class="star-step" id="s3">★<div class="step-label">Color</div></div>
+            <div class="star-step" id="s4">★<div class="step-label">Render</div></div>
+        </div>
+
+        <div class="label" style="margin-top:15px;">Estimated time</div>
         <div class="value">${c.deadline}</div>
 
+        <!-- PROGRESS -->
         <div class="progress-container" id="barBox">
             <div class="progress-bar" style="width:${prog}%">
                 ${Math.floor(prog)}%
@@ -308,8 +342,11 @@ async function searchClient(){
     </div>
     `;
 
-    const box=document.getElementById("barBox");
-    attachTooltip(box,message(days));
+    for(let i=1;i<=step;i++){
+        document.getElementById("s"+i)?.classList.add("active");
+    }
+
+    attachTooltip(document.getElementById("barBox"), message(days));
 }
 
 </script>
