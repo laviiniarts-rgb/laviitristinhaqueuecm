@@ -1,18 +1,174 @@
-/* 💖 mensagem fofa premium */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commission Tracker</title>
+
+<style>
+
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    color: white;
+    overflow-x: hidden;
+}
+
+/* 🌌 BACKGROUND PREMIUM */
+body::before {
+    content: "";
+    position: fixed;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 30%, #ff9de2, transparent),
+                radial-gradient(circle at 70% 60%, #c79dff, transparent),
+                radial-gradient(circle at 50% 80%, #ffe29d, transparent);
+    animation: moveBG 20s linear infinite;
+    z-index: -2;
+}
+
+@keyframes moveBG {
+    0% { transform: translate(0,0); }
+    50% { transform: translate(-10%, -10%); }
+    100% { transform: translate(0,0); }
+}
+
+/* 🌫 glass overlay */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(80px);
+    z-index: -1;
+}
+
+/* HERO */
+.hero {
+    margin-top: 120px;
+    text-align: center;
+    animation: fadeUp 1s ease;
+}
+
+.hero h1 {
+    font-size: 48px;
+    background: linear-gradient(90deg,#ff9de2,#ffe29d,#c79dff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+    opacity: 0.7;
+    margin-top: 10px;
+}
+
+/* INPUT */
+.search-box {
+    margin-top: 40px;
+}
+
+input {
+    padding: 14px;
+    width: 260px;
+    border-radius: 14px;
+    border: none;
+    outline: none;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+button {
+    padding: 14px 22px;
+    border-radius: 14px;
+    border: none;
+    margin-left: 10px;
+    cursor: pointer;
+    background: linear-gradient(90deg,#ff9de2,#c79dff);
+    color: white;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.08);
+}
+
+/* CARD */
+.card {
+    margin: 50px auto;
+    padding: 30px;
+    width: 340px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 30px rgba(255,255,255,0.1);
+    animation: fadeUp 0.8s ease;
+}
+
+.label {
+    font-size: 13px;
+    opacity: 0.6;
+}
+
+.value {
+    font-size: 22px;
+    margin-bottom: 12px;
+}
+
+/* STATUS */
+.status {
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    background: rgba(255,255,255,0.1);
+}
+
+/* 🔥 PROGRESS BAR */
+.progress-container {
+    margin-top: 20px;
+    height: 32px;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(270deg,#ff9de2,#ffe29d,#c79dff);
+    background-size: 400% 400%;
+    animation: gradientMove 6s ease infinite;
+    transition: width 1s ease;
+    border-radius: 30px;
+    box-shadow: 0 0 20px rgba(255,150,255,0.6);
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% }
+    50% { background-position: 100% }
+    100% { background-position: 0% }
+}
+
+/* 💖 FLOAT MESSAGE */
 .floating-message {
     position: absolute;
     bottom: 60px;
     left: 50%;
     transform: translateX(-50%) translateY(10px);
-    background: linear-gradient(135deg, #ff9de2, #c79dff);
+    background: linear-gradient(135deg,#ff9de2,#c79dff);
     padding: 10px 16px;
     border-radius: 12px;
     font-size: 13px;
-    white-space: nowrap;
     opacity: 0;
-    pointer-events: none;
-    transition: 0.4s;
-    box-shadow: 0 0 15px rgba(255, 150, 255, 0.5);
+    transition: 0.3s;
+    box-shadow: 0 0 20px rgba(255,150,255,0.5);
 }
 
 .floating-message.show {
@@ -20,14 +176,133 @@
     transform: translateX(-50%) translateY(0);
 }
 
-/* setinha da mensagem */
-.floating-message::after {
-    content: "";
-    position: absolute;
-    bottom: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 6px;
-    border-style: solid;
-    border-color: #c79dff transparent transparent transparent;
+/* LOADING */
+.loader {
+    margin-top: 40px;
+    opacity: 0.6;
+    animation: pulse 1.2s infinite;
 }
+
+@keyframes pulse {
+    0% { opacity: 0.3 }
+    50% { opacity: 1 }
+    100% { opacity: 0.3 }
+}
+
+/* ANIM */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="hero">
+    <h1>Commission Tracker</h1>
+    <p>Track your artwork in real time</p>
+
+    <div class="search-box">
+        <input id="search" placeholder="Enter your name">
+        <button onclick="searchClient()">Search</button>
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<script>
+
+const sheetURL = "https://docs.google.com/spreadsheets/d/1ofYE3lurLEXTQ6XJeAgLwLzgRIFFD94M2Vh5iON-T-M/gviz/tq?tqx=out:json";
+
+let clients = [];
+
+async function fetchClients() {
+    const res = await fetch(sheetURL);
+    const text = await res.text();
+    const json = JSON.parse(text.substring(47).slice(0, -2));
+    return json.table.rows.map(r => ({
+        name: r.c[0]?.v || "",
+        position: Number(r.c[1]?.v || 0),
+        status: r.c[2]?.v || "",
+        deadline: r.c[3]?.v || ""
+    }));
+}
+
+function calculateProgress(days){
+    days = parseInt(days);
+    return Math.min(Math.max(((7 - days)/7)*100,0),100);
+}
+
+function getMessage(days){
+    if(days>=7) return "✨ Just started!";
+    if(days>=5) return "🎨 Early progress!";
+    if(days>=3) return "💫 Halfway there!";
+    if(days>=1) return "💖 Almost done!";
+    return "🌟 Finishing touches!";
+}
+
+function showMessage(container,text){
+    let msg = container.querySelector(".floating-message");
+
+    if(!msg){
+        msg = document.createElement("div");
+        msg.className="floating-message";
+        container.appendChild(msg);
+    }
+
+    msg.textContent=text;
+    msg.classList.add("show");
+
+    setTimeout(()=>msg.classList.remove("show"),2000);
+}
+
+async function searchClient(){
+    const name = document.getElementById("search").value.toLowerCase();
+    const result = document.getElementById("result");
+
+    result.innerHTML = `<div class="loader">Loading...</div>`;
+
+    if(!clients.length){
+        clients = await fetchClients();
+    }
+
+    const client = clients.find(c => c.name.toLowerCase() === name);
+
+    if(!client){
+        result.innerHTML = `<p style="margin-top:20px;opacity:.6">Client not found</p>`;
+        return;
+    }
+
+    const progress = calculateProgress(client.deadline);
+    const days = parseInt(client.deadline);
+
+    result.innerHTML = `
+    <div class="card">
+        <div class="label">Client</div>
+        <div class="value">${client.name}</div>
+
+        <div class="label">Position</div>
+        <div class="value">#${client.position}</div>
+
+        <div class="label">Status</div>
+        <div class="status">${client.status}</div>
+
+        <div class="label">Estimated time</div>
+        <div class="value">${client.deadline}</div>
+
+        <div class="progress-container"
+            onmouseenter="showMessage(this,'${getMessage(days)}')"
+            onclick="showMessage(this,'${getMessage(days)}')">
+            
+            <div class="progress-bar" style="width:${progress}%"></div>
+        </div>
+    </div>
+    `;
+}
+
+</script>
+
+</body>
+</html>
