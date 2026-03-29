@@ -6,8 +6,6 @@
 <title>Commission Tracker</title>
 
 <style>
-
-/* RESET */
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
@@ -17,7 +15,6 @@ body{
     overflow-x:hidden;
 }
 
-/* BACKGROUND */
 .bg{
     position:fixed;
     inset:0;
@@ -34,7 +31,6 @@ body{
     100%{transform:translate(0,0);}
 }
 
-/* ENTRADA */
 .fade-in{
     opacity:0;
     transform:translateY(20px);
@@ -49,7 +45,6 @@ body{
     to{opacity:1;transform:translateY(0);}
 }
 
-/* HERO */
 .hero{
     margin-top:120px;
     text-align:center;
@@ -67,7 +62,6 @@ body{
     margin-top:10px;
 }
 
-/* INPUT */
 .search{margin-top:40px;}
 
 input{
@@ -83,7 +77,7 @@ button{
     padding:14px 20px;
     border-radius:14px;
     border:none;
-    margin-left:10px;
+    margin:8px;
     cursor:pointer;
     background:linear-gradient(90deg,#ff9de2,#c79dff);
     transition:.25s;
@@ -91,7 +85,6 @@ button{
 
 button:hover{transform:scale(1.07);}
 
-/* CARD */
 .card{
     margin:50px auto;
     padding:28px;
@@ -105,7 +98,6 @@ button:hover{transform:scale(1.07);}
 .label{font-size:13px;opacity:.6;}
 .value{font-size:20px;margin-bottom:12px;}
 
-/* STATUS */
 .status{
     padding:10px;
     border-radius:10px;
@@ -113,7 +105,7 @@ button:hover{transform:scale(1.07);}
     margin-bottom:10px;
 }
 
-/* ⭐ TIMELINE */
+/* timeline */
 .timeline{
     margin-top:20px;
     display:flex;
@@ -155,7 +147,7 @@ button:hover{transform:scale(1.07);}
     transform:translateX(-50%);
 }
 
-/* PROGRESS */
+/* progress */
 .progress-container{
     margin-top:25px;
     height:40px;
@@ -188,7 +180,6 @@ button:hover{transform:scale(1.07);}
     100%{background-position:0%}
 }
 
-/* TOOLTIP */
 .tooltip{
     position:absolute;
     bottom:55px;
@@ -208,7 +199,6 @@ button:hover{transform:scale(1.07);}
     transform:translateX(-50%) translateY(0);
 }
 
-/* LOADING */
 .loader{
     margin-top:30px;
     opacity:.5;
@@ -235,6 +225,8 @@ button:hover{transform:scale(1.07);}
     <div class="search fade-in delay2">
         <input id="search" placeholder="Enter your name">
         <button onclick="searchClient()">Search</button>
+        <br>
+        <button onclick="checkQueue()">Not a client? Check queue</button>
     </div>
 
     <div id="result" class="fade-in delay3"></div>
@@ -253,12 +245,11 @@ async function fetchClients(){
         name:x.c[0]?.v||"",
         position:Number(x.c[1]?.v||0),
         status:x.c[2]?.v||"",
-        deadline:x.c[3]?.v||""
+        deadline:Number(x.c[3]?.v||0)
     }));
 }
 
 function progress(days){
-    days=parseInt(days);
     return Math.min(Math.max(((7-days)/7)*100,0),100);
 }
 
@@ -308,7 +299,6 @@ async function searchClient(){
     }
 
     const prog=progress(c.deadline);
-    const days=parseInt(c.deadline);
     const step=getStep(c.status);
 
     result.innerHTML=`
@@ -322,7 +312,6 @@ async function searchClient(){
         <div class="label">Status</div>
         <div class="status">${c.status}</div>
 
-        <!-- ⭐ TIMELINE -->
         <div class="timeline">
             <div class="star-step" id="s1">★<div class="step-label">Sketch</div></div>
             <div class="star-step" id="s2">★<div class="step-label">Lineart</div></div>
@@ -331,9 +320,8 @@ async function searchClient(){
         </div>
 
         <div class="label" style="margin-top:15px;">Estimated time</div>
-        <div class="value">${c.deadline}</div>
+        <div class="value">${c.deadline} days</div>
 
-        <!-- PROGRESS -->
         <div class="progress-container" id="barBox">
             <div class="progress-bar" style="width:${prog}%">
                 ${Math.floor(prog)}%
@@ -346,11 +334,57 @@ async function searchClient(){
         document.getElementById("s"+i)?.classList.add("active");
     }
 
-    attachTooltip(document.getElementById("barBox"), message(days));
+    attachTooltip(document.getElementById("barBox"), message(c.deadline));
+}
+
+async function checkQueue(){
+    const result=document.getElementById("result");
+
+    result.innerHTML=`<div class="loader">Loading...</div>`;
+
+    if(!clients.length){
+        clients=await fetchClients();
+    }
+
+    const total=clients.length;
+
+    let totalDays=clients.reduce((sum,c)=>sum + Number(c.deadline || 0),0);
+
+    let today=new Date();
+    let startDate=new Date();
+    startDate.setDate(today.getDate() + totalDays);
+
+    const options={ day:"numeric", month:"long" };
+    let formattedDate=startDate.toLocaleDateString("en-US", options);
+
+    result.innerHTML=`
+    <div class="card">
+        <div class="label">Queue size</div>
+        <div class="value">${total} clients</div>
+
+        <div class="label">Estimated position</div>
+        <div class="value">#${total + 1}</div>
+
+        <div class="label">Estimated wait time</div>
+        <div class="value">~ ${totalDays} days</div>
+
+        <div class="label">Your commission would start on</div>
+        <div class="value">${formattedDate}</div>
+
+        <p style="margin-top:12px; opacity:.6;">
+        Based on current queue workload.
+        </p>
+
+        <button onclick="window.open('https://www.reddit.com/u/Laviitristinha/s/BsI0CI7uy8','_blank')">
+        Commission me
+        </button>
+    </div>
+    `;
 }
 
 </script>
 
 </body>
 </html>
+
 
