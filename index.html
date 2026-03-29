@@ -6,139 +6,204 @@
 <title>Commission Tracker</title>
 
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
 
-body {
-    font-family: "Segoe UI", sans-serif;
-    color: #f1f1f1;
-    background: #0f172a;
+/* RESET */
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+    font-family: "Inter", sans-serif;
+    background:#0b0f1a;
+    color:#e5e7eb;
+    overflow-x:hidden;
 }
 
-/* 🌌 FUNDO MAIS CONTROLADO */
-body::before {
-    content:"";
+/* 🌌 BACKGROUND SOFT */
+.bg{
     position:fixed;
     inset:0;
-    background:
-        radial-gradient(circle at 20% 30%, #ff9de230, transparent 40%),
-        radial-gradient(circle at 80% 60%, #c79dff30, transparent 40%);
     z-index:-1;
+    background:
+    radial-gradient(circle at 20% 30%, #ff9de220, transparent 40%),
+    radial-gradient(circle at 80% 60%, #c79dff20, transparent 40%),
+    radial-gradient(circle at 50% 80%, #ffe29d15, transparent 40%);
+    animation:bgMove 18s ease infinite;
+}
+
+@keyframes bgMove{
+    0%{transform:translate(0,0);}
+    50%{transform:translate(-3%,-3%);}
+    100%{transform:translate(0,0);}
+}
+
+/* ✨ ENTRADA SUAVE */
+.fade-in{
+    opacity:0;
+    transform:translateY(20px);
+    animation:fadeUp 1s ease forwards;
+}
+
+.delay1{animation-delay:.2s;}
+.delay2{animation-delay:.4s;}
+.delay3{animation-delay:.6s;}
+
+@keyframes fadeUp{
+    to{opacity:1;transform:translateY(0);}
 }
 
 /* HERO */
-.hero {
-    margin-top:100px;
+.hero{
+    margin-top:120px;
     text-align:center;
 }
 
-.hero h1 {
-    font-size:42px;
-    background: linear-gradient(90deg,#ff9de2,#ffe29d,#c79dff);
+.hero h1{
+    font-size:44px;
+    background:linear-gradient(90deg,#ff9de2,#ffe29d,#c79dff);
     -webkit-background-clip:text;
     -webkit-text-fill-color:transparent;
 }
 
-.hero p {
-    opacity:0.7;
-    margin-top:8px;
+.hero p{
+    opacity:.6;
+    margin-top:10px;
 }
 
 /* INPUT */
-.search-box { margin-top:30px; }
+.search{
+    margin-top:40px;
+}
 
-input {
-    padding:12px;
-    width:240px;
-    border-radius:12px;
+input{
+    padding:14px;
+    width:260px;
+    border-radius:14px;
     border:none;
-    background:#1e293b;
+    background:#111827;
     color:white;
 }
 
-button {
-    padding:12px 18px;
-    border-radius:12px;
+button{
+    padding:14px 20px;
+    border-radius:14px;
     border:none;
-    margin-left:8px;
+    margin-left:10px;
     cursor:pointer;
-    background: linear-gradient(90deg,#ff9de2,#c79dff);
+    background:linear-gradient(90deg,#ff9de2,#c79dff);
+    transition:.25s;
 }
 
-button:hover { transform:scale(1.05); }
+button:hover{
+    transform:scale(1.07);
+}
 
 /* CARD */
-.card {
-    margin:40px auto;
-    padding:25px;
-    width:320px;
-    border-radius:18px;
-    background:#1e293b;
-    box-shadow:0 0 25px rgba(0,0,0,0.5);
+.card{
+    margin:50px auto;
+    padding:28px;
+    width:340px;
+    border-radius:20px;
+    background:#111827;
+    box-shadow:0 0 30px rgba(0,0,0,0.6);
+    animation:fadeUp .8s ease;
 }
 
-.label { font-size:13px; opacity:0.6; }
-.value { font-size:20px; margin-bottom:10px; }
+.label{
+    font-size:13px;
+    opacity:.6;
+}
+
+.value{
+    font-size:20px;
+    margin-bottom:12px;
+}
 
 /* STATUS */
-.status {
+.status{
     padding:10px;
     border-radius:10px;
-    background:#0f172a;
+    background:#0b0f1a;
     margin-bottom:10px;
 }
 
-/* 🔥 PROGRESS */
-.progress-container {
-    margin-top:15px;
-    height:34px;
-    background:#0f172a;
-    border-radius:30px;
+/* 🔥 PROGRESS BAR */
+.progress-container{
+    margin-top:18px;
+    height:40px;
+    background:#0b0f1a;
+    border-radius:40px;
     position:relative;
     overflow:hidden;
     cursor:pointer;
 }
 
-.progress-bar {
+/* brilho interno */
+.progress-bar{
     height:100%;
     width:0%;
-    border-radius:30px;
-    background: linear-gradient(270deg,#ff9de2,#ffe29d,#c79dff);
+    border-radius:40px;
+    background:linear-gradient(270deg,#ff9de2,#ffe29d,#c79dff);
     background-size:400% 400%;
-    animation:move 6s infinite;
-    transition:width 1s;
+    animation:gradientMove 6s ease infinite;
+    transition:width 1.2s ease;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    color:#111;
+    font-weight:600;
 }
 
-@keyframes move {
-    0% {background-position:0%}
-    50% {background-position:100%}
-    100% {background-position:0%}
-}
-
-/* 💖 MENSAGEM FUNCIONAL */
-.floating-message {
+/* glow suave */
+.progress-bar::after{
+    content:"";
     position:absolute;
+    inset:0;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);
+    animation:shine 3s infinite;
+}
+
+@keyframes shine{
+    0%{transform:translateX(-100%);}
+    100%{transform:translateX(100%);}
+}
+
+@keyframes gradientMove{
+    0%{background-position:0%}
+    50%{background-position:100%}
+    100%{background-position:0%}
+}
+
+/* 💖 TOOLTIP */
+.tooltip{
+    position:absolute;
+    bottom:55px;
     left:50%;
-    bottom:50px;
-    transform:translateX(-50%);
+    transform:translateX(-50%) translateY(10px);
     background:#111827;
-    padding:8px 14px;
-    border-radius:10px;
+    padding:10px 14px;
+    border-radius:12px;
     font-size:12px;
     opacity:0;
-    transition:0.3s;
+    transition:.3s;
     white-space:nowrap;
-    pointer-events:none;
 }
 
-.floating-message.show {
+.tooltip.show{
     opacity:1;
-    transform:translateX(-50%) translateY(-5px);
+    transform:translateX(-50%) translateY(0);
 }
 
 /* LOADING */
-.loader {
-    margin-top:20px;
-    opacity:0.6;
+.loader{
+    margin-top:30px;
+    opacity:.5;
+    animation:pulse 1.2s infinite;
+}
+
+@keyframes pulse{
+    0%{opacity:.3}
+    50%{opacity:1}
+    100%{opacity:.3}
 }
 
 </style>
@@ -146,88 +211,82 @@ button:hover { transform:scale(1.05); }
 
 <body>
 
-<div class="hero">
-    <h1>Commission Tracker</h1>
-    <p>Track your artwork progress</p>
+<div class="bg"></div>
 
-    <div class="search-box">
+<div class="hero">
+    <h1 class="fade-in">Commission Tracker</h1>
+    <p class="fade-in delay1">Follow your artwork in real time</p>
+
+    <div class="search fade-in delay2">
         <input id="search" placeholder="Enter your name">
         <button onclick="searchClient()">Search</button>
     </div>
 
-    <div id="result"></div>
+    <div id="result" class="fade-in delay3"></div>
 </div>
 
 <script>
 
-const sheetURL = "https://docs.google.com/spreadsheets/d/1ofYE3lurLEXTQ6XJeAgLwLzgRIFFD94M2Vh5iON-T-M/gviz/tq?tqx=out:json";
-let clients = [];
+const sheetURL="https://docs.google.com/spreadsheets/d/1ofYE3lurLEXTQ6XJeAgLwLzgRIFFD94M2Vh5iON-T-M/gviz/tq?tqx=out:json";
+let clients=[];
 
 async function fetchClients(){
-    const res = await fetch(sheetURL);
-    const text = await res.text();
-    const json = JSON.parse(text.substring(47).slice(0,-2));
-    return json.table.rows.map(r => ({
-        name:r.c[0]?.v || "",
-        position:Number(r.c[1]?.v || 0),
-        status:r.c[2]?.v || "",
-        deadline:r.c[3]?.v || ""
+    const r=await fetch(sheetURL);
+    const t=await r.text();
+    const j=JSON.parse(t.substring(47).slice(0,-2));
+    return j.table.rows.map(x=>({
+        name:x.c[0]?.v||"",
+        position:Number(x.c[1]?.v||0),
+        status:x.c[2]?.v||"",
+        deadline:x.c[3]?.v||""
     }));
 }
 
-function calc(days){
-    days = parseInt(days);
+function progress(days){
+    days=parseInt(days);
     return Math.min(Math.max(((7-days)/7)*100,0),100);
 }
 
-function msg(days){
-    if(days>=7) return "Just started ✨";
-    if(days>=5) return "Early progress 🎨";
-    if(days>=3) return "Halfway there 💫";
-    if(days>=1) return "Almost done 💖";
-    return "Finishing touches 🌟";
+function message(days){
+    if(days>=7)return "Just started ✨";
+    if(days>=5)return "Early progress 🎨";
+    if(days>=3)return "Halfway 💫";
+    if(days>=1)return "Almost done 💖";
+    return "Finishing 🌟";
 }
 
-/* 🔥 CORREÇÃO REAL AQUI */
-function attachMessage(container, text){
-    let box = document.createElement("div");
-    box.className = "floating-message";
-    box.textContent = text;
-    container.appendChild(box);
+function attachTooltip(box,text){
+    const tip=document.createElement("div");
+    tip.className="tooltip";
+    tip.textContent=text;
+    box.appendChild(tip);
 
-    function show(){
-        box.classList.add("show");
-    }
-
-    function hide(){
-        box.classList.remove("show");
-    }
-
-    container.addEventListener("mouseenter", show);
-    container.addEventListener("mouseleave", hide);
-    container.addEventListener("click", show);
+    box.addEventListener("mouseenter",()=>tip.classList.add("show"));
+    box.addEventListener("mouseleave",()=>tip.classList.remove("show"));
+    box.addEventListener("click",()=>tip.classList.toggle("show"));
 }
 
 async function searchClient(){
-    const name = document.getElementById("search").value.toLowerCase();
-    const result = document.getElementById("result");
+    const name=document.getElementById("search").value.toLowerCase();
+    const result=document.getElementById("result");
 
-    result.innerHTML = `<div class="loader">Loading...</div>`;
+    result.innerHTML=`<div class="loader">Loading...</div>`;
 
     if(!clients.length){
-        clients = await fetchClients();
+        clients=await fetchClients();
     }
 
-    const c = clients.find(x => x.name.toLowerCase() === name);
+    const c=clients.find(x=>x.name.toLowerCase()===name);
 
     if(!c){
-        result.innerHTML = `<p style="opacity:.6">Client not found</p>`;
+        result.innerHTML=`<p style="opacity:.6">Client not found</p>`;
         return;
     }
 
-    const progress = calc(c.deadline);
+    const prog=progress(c.deadline);
+    const days=parseInt(c.deadline);
 
-    result.innerHTML = `
+    result.innerHTML=`
     <div class="card">
         <div class="label">Client</div>
         <div class="value">${c.name}</div>
@@ -241,14 +300,16 @@ async function searchClient(){
         <div class="label">Estimated time</div>
         <div class="value">${c.deadline}</div>
 
-        <div class="progress-container" id="progressBox">
-            <div class="progress-bar" style="width:${progress}%"></div>
+        <div class="progress-container" id="barBox">
+            <div class="progress-bar" style="width:${prog}%">
+                ${Math.floor(prog)}%
+            </div>
         </div>
     </div>
     `;
 
-    const box = document.getElementById("progressBox");
-    attachMessage(box, msg(parseInt(c.deadline)));
+    const box=document.getElementById("barBox");
+    attachTooltip(box,message(days));
 }
 
 </script>
